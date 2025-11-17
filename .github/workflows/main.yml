@@ -9,23 +9,29 @@ jobs:
   build:
     runs-on: self-hosted   # WSL Runner 사용
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set execute permission
+      - name: Set execute permission for Gradle
         run: chmod +x ./gradlew
 
       - name: Ensure spring-app directory exists
         run: mkdir -p ~/spring-app && chmod -R 755 ~/spring-app
 
-      - name: Build jar
+      - name: Build Spring Boot jar
         run: ./gradlew clean bootJar -x test
 
       - name: Run Spring Boot app
         run: |
+          # JAR 파일 복사
           cp build/libs/*.jar ~/spring-app/app.jar
           chmod +x ~/spring-app/app.jar
-          # 기존 java 프로세스 모두 종료 (사용자 권한)
+          
+          # 기존 java 프로세스 모두 종료 (user 권한)
           pkill -u $USER -f 'java -jar' || true
-          # 백그라운드로 안전하게 실행
+          
+          # nohup으로 백그라운드 실행
           nohup java -jar ~/spring-app/app.jar > ~/spring-app/app.log 2>&1 < /dev/null &
+
+      - name: Show running java processes
+        run: ps aux | grep java
