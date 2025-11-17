@@ -1,0 +1,29 @@
+name: WSL Gradle Spring Boot Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-run:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build Spring Boot
+        run: ./gradlew clean bootJar -x test
+
+      - name: Stop old app (if running)
+        run: |
+          pkill -f 'java -jar build/libs/*.jar' || true
+
+      - name: Run Spring Boot app
+        run: nohup java -jar build/libs/*.jar > app.log 2>&1 &
