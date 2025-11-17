@@ -1,29 +1,35 @@
-name: WSL Gradle Spring Boot Deploy
+name: Build and Deploy to WSL
 
 on:
   push:
     branches:
-      - main
+      - main  # main 브랜치에 푸시될 때 실행
 
 jobs:
-  build-and-run:
-    runs-on: self-hosted
+  build-and-deploy:
+    runs-on: ubuntu-latest  # GitHub Actions 환경
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: '17'
+    - name: Make Gradle Wrapper executable
+      run: chmod +x gradlew
 
-      - name: Build Spring Boot
-        run: ./gradlew clean bootJar -x test
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: '17'
 
-      - name: Stop old app (if running)
-        run: |
-          pkill -f 'java -jar build/libs/*.jar' || true
+    - name: Build Spring Boot app
+      run: ./gradlew clean bootJar -x test
 
-      - name: Run Spring Boot app
-        run: nohup java -jar build/libs/*.jar > app.log 2>&1 &
+    - name: Copy to WSL and run
+      run: |
+        # WSL 경로 (자신의 WSL 홈 경로로 수정)
+        WSL_DIR=/home/youruser/spring-app
+        mkdir -p $WSL_DIR
+        cp build/libs/*.jar $WSL_DIR/app.jar
+
+        # WSL에서 실행
+        wsl java -jar $WSL_DIR/app.jar &
