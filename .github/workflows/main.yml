@@ -34,12 +34,12 @@ jobs:
         run: |
           cp build/libs/*.jar ~/spring-app/app.jar
           chmod +x ~/spring-app/app.jar
-
-          # 기존 java 프로세스 모두 종료 (사용자 권한)
-          pkill -u $USER -f 'java -jar' || true
-
-          # 백그라운드로 안전하게 실행
-          nohup java -jar ~/spring-app/app.jar > ~/spring-app/app.log 2>&1 < /dev/null &
-
+          
+          # 기존 java 프로세스 모두 종료 (root 권한)
+          sudo pkill -f 'java -jar' || true
+          
+          # 백그라운드로 안전하게 root 권한으로 실행
+          sudo nohup java -jar ~/spring-app/app.jar > ~/spring-app/app.log 2>&1 < /dev/null &
+          
       - name: Show running java processes
         run: ps aux | grep java
