@@ -22,5 +22,5 @@ jobs:
         run: |
           mkdir -p ~/spring-app
           cp build/libs/*.jar ~/spring-app/app.jar
-          pkill -f 'java -jar' || true
+          sudo pkill -f 'java -jar' || true
           nohup java -jar ~/spring-app/app.jar > ~/spring-app/app.log 2>&1 &
