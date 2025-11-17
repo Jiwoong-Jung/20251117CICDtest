@@ -24,5 +24,8 @@ jobs:
       - name: Run Spring Boot app
         run: |
           cp build/libs/*.jar ~/spring-app/app.jar
-          sudo pkill -f 'java -jar' || true
-          nohup java -jar ~/spring-app/app.jar > ~/spring-app/app.log 2>&1 &
+          chmod +x ~/spring-app/app.jar
+          # 기존 java 프로세스 종료
+          pkill -f 'java -jar ~/spring-app/app.jar' || true
+          # 백그라운드로 안전하게 실행
+          setsid java -jar ~/spring-app/app.jar > ~/spring-app/app.log 2>&1 < /dev/null &
