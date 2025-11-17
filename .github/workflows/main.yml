@@ -15,12 +15,14 @@ jobs:
       - name: Set execute permission
         run: chmod +x ./gradlew
 
+      - name: Ensure spring-app directory exists
+        run: mkdir -p ~/spring-app && chmod -R 755 ~/spring-app
+
       - name: Build jar
         run: ./gradlew clean bootJar -x test
 
       - name: Run Spring Boot app
         run: |
-          mkdir -p ~/spring-app
           cp build/libs/*.jar ~/spring-app/app.jar
           sudo pkill -f 'java -jar' || true
           nohup java -jar ~/spring-app/app.jar > ~/spring-app/app.log 2>&1 &
