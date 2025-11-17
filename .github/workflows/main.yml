@@ -27,7 +27,7 @@ jobs:
     - name: Copy to WSL and run
       run: |
         # WSL 경로 (자신의 WSL 홈 경로로 수정)
-        WSL_DIR=/home/youruser/spring-app
+        WSL_DIR=/home/user/spring-app
         mkdir -p $WSL_DIR
         cp build/libs/*.jar $WSL_DIR/app.jar
 
